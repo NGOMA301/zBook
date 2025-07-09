@@ -18,6 +18,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -29,7 +31,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const checkAuth = async () => {
     try {
       // Check if user is authenticated by making a request to get summaries
-      const response = await fetch("/api/v1/summaries", {
+      const response = await fetch(`${baseUrl}/api/v1/summaries`, {
         credentials: "include",
       })
 
@@ -49,7 +51,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const login = async (email: string, password: string) => {
-    const response = await fetch("/api/v1/auth/login", {
+    const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -70,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const register = async (email: string, password: string) => {
-    const response = await fetch("/api/v1/auth/register", {
+    const response = await fetch(`${baseUrl}/api/v1/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -85,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const logout = async () => {
-    await fetch("/api/v1/auth/logout", {
+    await fetch(`${baseUrl}/api/v1/auth/logout`, {
       method: "POST",
       credentials: "include",
     })

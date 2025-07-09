@@ -21,7 +21,7 @@ interface Summary {
 interface SummaryHistoryProps {
   refreshTrigger?: number
 }
-
+const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
 export function SummaryHistory({ refreshTrigger }: SummaryHistoryProps) {
   const [summaries, setSummaries] = useState<Summary[]>([])
   const [loading, setLoading] = useState(true)
@@ -35,7 +35,7 @@ export function SummaryHistory({ refreshTrigger }: SummaryHistoryProps) {
   const fetchSummaries = async () => {
     try {
       setLoading(true)
-      const response = await fetch("/api/v1/summaries", {
+      const response = await fetch(`${baseUrl}/api/v1/summaries/summaries`, {
         method: "POST", // Based on your API docs, it's POST with empty body
         credentials: "include",
         headers: {
