@@ -30,7 +30,10 @@ export function SummaryDisplay({ summary }: SummaryDisplayProps) {
     })
   }
 
-  const formatKeyPoints = (keyPoints: string) => {
+  const formatKeyPoints = (keyPoints: string | undefined | null) => {
+    if (!keyPoints || typeof keyPoints !== "string") {
+      return []
+    }
     // Split by common delimiters and filter out empty strings
     return keyPoints
       .split(/[•\n\r-]/)

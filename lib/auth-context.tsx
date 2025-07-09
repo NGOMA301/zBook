@@ -18,8 +18,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000"
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -30,28 +28,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      // Check if user is authenticated by making a request to get summaries
-      const response = await fetch(`${baseUrl}/api/v1/summaries`, {
+      const response = await fetch("/api/v1/auth/me", {
+        method: "GET",
         credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
       })
 
       if (response.ok) {
-        // If we can get summaries, user is authenticated
-        // We'll need to store user info in localStorage or get it from a user endpoint
-        const userData = localStorage.getItem("user")
-        if (userData) {
-          setUser(JSON.parse(userData))
-        }
+        const userData = await response.json()
+        setUser(userData)
+      } else {
+        setUser(null)
       }
     } catch (error) {
       console.error("Auth check failed:", error)
+      setUser(null)
     } finally {
       setLoading(false)
     }
   }
 
   const login = async (email: string, password: string) => {
-    const response = await fetch(`${baseUrl}/api/v1/auth/login`, {
+    const response = await fetch("/api/v1/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -65,14 +65,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       throw new Error(error.detail || "Login failed")
     }
 
-    // Store user info (in a real app, you'd get this from the response or a separate endpoint)
-    const userData = { user_id: "temp_id", email }
-    localStorage.setItem("user", JSON.stringify(userData))
-    setUser(userData)
+    // After successful login, get user data from /me endpoint
+    await checkAuth()
   }
 
   const register = async (email: string, password: string) => {
-    const response = await fetch(`${baseUrl}/api/v1/auth/register`, {
+    const response = await fetch("/api/v1/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -87,13 +85,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const logout = async () => {
-    await fetch(`${baseUrl}/api/v1/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    })
-
-    localStorage.removeItem("user")
-    setUser(null)
+    try {
+      await fetch("/api/v1/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      })
+    } catch (error) {
+      console.error("Logout request failed:", error)
+    } finally {
+      // Always clear user state regardless of logout request success
+      setUser(null)
+    }
   }
 
   return <AuthContext.Provider value={{ user, login, register, logout, loading }}>{children}</AuthContext.Provider>
