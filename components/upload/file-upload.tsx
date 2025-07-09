@@ -21,6 +21,9 @@ interface FileUploadProps {
   onSummaryGenerated: (summary: Summary) => void
 }
 
+const baseurl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+
+
 export function FileUpload({ onSummaryGenerated }: FileUploadProps) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState("")
@@ -39,7 +42,7 @@ export function FileUpload({ onSummaryGenerated }: FileUploadProps) {
         const formData = new FormData()
         formData.append("file", file)
 
-        const response = await fetch("/api/v1/summaries/", {
+        const response = await fetch(`${baseurl}/api/v1/summaries/`, {
           method: "POST",
           credentials: "include",
           body: formData,

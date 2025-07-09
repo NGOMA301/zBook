@@ -18,6 +18,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
+const baseurl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
@@ -28,7 +30,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const checkAuth = async () => {
     try {
-      const response = await fetch("/api/v1/auth/me", {
+      const response = await fetch(`${baseurl}/api/v1/auth/me`, {
         method: "GET",
         credentials: "include",
         headers: {
@@ -51,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const login = async (email: string, password: string) => {
-    const response = await fetch("/api/v1/auth/login", {
+    const response = await fetch(`${baseurl}/api/v1/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -70,7 +72,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const register = async (email: string, password: string) => {
-    const response = await fetch("/api/v1/auth/register", {
+    const response = await fetch(`${baseurl}/api/v1/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -86,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      await fetch("/api/v1/auth/logout", {
+      await fetch(`${baseurl}/api/v1/auth/logout`, {
         method: "POST",
         credentials: "include",
       })

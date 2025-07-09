@@ -22,6 +22,9 @@ interface SummaryHistoryProps {
   refreshTrigger?: number
 }
 
+const baseurl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"
+
+
 export function SummaryHistory({ refreshTrigger }: SummaryHistoryProps) {
   const [summaries, setSummaries] = useState<Summary[]>([])
   const [loading, setLoading] = useState(true)
@@ -35,7 +38,7 @@ export function SummaryHistory({ refreshTrigger }: SummaryHistoryProps) {
   const fetchSummaries = async () => {
     try {
       setLoading(true)
-      const response = await fetch("/api/v1/summaries", {
+      const response = await fetch(`${baseurl}/api/v1/summaries/summaries`, {
         method: "POST", // Based on your API docs, it's POST with empty body
         credentials: "include",
         headers: {
@@ -68,14 +71,14 @@ export function SummaryHistory({ refreshTrigger }: SummaryHistoryProps) {
   }
 
   const formatKeyPoints = (keyPoints: string | undefined | null) => {
-    if (!keyPoints || typeof keyPoints !== "string") {
+    if (!keyPoints) {
       return []
     }
-    return keyPoints
-      .split(/[•\n\r-]/)
-      .map((point) => point.trim())
-      .filter((point) => point.length > 0)
-      .slice(0, 3) // Show only first 3 key points in history
+    return keyPoints.map((point) => point.trim()).filter((point) => point.length > 0).slice(0, 5)
+      // .split(/[•\n\r-]/)
+      
+      
+       // Show only first 3 key points in history
   }
 
   const toggleExpanded = (id: string) => {
@@ -123,7 +126,7 @@ export function SummaryHistory({ refreshTrigger }: SummaryHistoryProps) {
       </Card>
     )
   }
-
+console.log(summaries)
   return (
     <Card>
       <CardHeader>
