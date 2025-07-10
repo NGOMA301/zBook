@@ -31,14 +31,14 @@ export function SummaryDisplay({ summary }: SummaryDisplayProps) {
   }
 
   const formatKeyPoints = (keyPoints: string | undefined | null) => {
-    if (!keyPoints || typeof keyPoints !== "string") {
+    if (!keyPoints) {
       return []
     }
     // Split by common delimiters and filter out empty strings
-    return keyPoints
-      .split(/[•\n\r-]/)
-      .map((point) => point.trim())
-      .filter((point) => point.length > 0)
+    return keyPoints.map((point) => point.trim()).filter((point) => point.length > 0)
+      // .split(/[•\n\r-]/)
+      
+     
   }
 
   return (
